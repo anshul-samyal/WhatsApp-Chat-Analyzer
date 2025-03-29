@@ -1,5 +1,5 @@
 import streamlit as st
-import preprocessor  # Import preprocessor.py
+import preprocessor , helper  # Import preprocessor.py and helper.py
 
 st.sidebar.title("WhatsApp Chat Analyzer")  # Sidebar title
 uploaded_file = st.sidebar.file_uploader("Choose a file", type=["txt"])  # File uploader
@@ -28,6 +28,9 @@ selected_user = st.sidebar.selectbox("Show analysis with respect to", user_list)
 
 # Only run analysis if the button is clicked and a file is uploaded
 if st.sidebar.button('Show Analysis') and df is not None:
+
+    num_messages = helper.fetch_stats(selected_user, df)  # Fetch statistics for the selected user that is the number of messages 
+
     col1, col2, col3, col4 = st.columns(4)  
 
     with col1:
