@@ -1,23 +1,37 @@
 import streamlit as st
-import preprocessor # this is to import the preprocessor.py file 
+import preprocessor  # Import preprocessor.py
 
-st.sidebar.title("WhatsApp Chat Analyzer") # sidebar.s title
-uploaded_file = st.sidebar.file_uploader("Choose a file")
+st.sidebar.title("WhatsApp Chat Analyzer")  # Sidebar title
+uploaded_file = st.sidebar.file_uploader("Choose a file", type=["txt"])  # File uploader
+
+# Ensure df is only created when a file is uploaded
+df = None
+
 if uploaded_file is not None:
     bytes_data = uploaded_file.getvalue()
-    data = bytes_data.decode("utf-8")# till here this the code for uploading the chat file in our sidebar 
-    df = preprocessor.preprocess(data) #to convert the data from preprocessor 
+    data = bytes_data.decode("utf-8")  # Convert bytes to text
+    df = preprocessor.preprocess(data)  # Process the chat file
 
-    st.dataframe(df) # to convert the the data into dataframe 
-   
-# to create the dropdown for different users or for the analysis between them 
-user_list = df['user'].unique().tolist()
-user_list.remove('group_notification')
-user_list.sort()
-user_list.insert(0 , "overall") #ye saari user name ke liye bakchidub thi
-st.sidebar.selectbox("Show analysis with respect to" , user_list)
+    st.dataframe(df)  # convert the data into dataframe 
 
-if st.sidebar.button('Show Analysis'):
-    pass
+# Prevent errors if no file is uploaded
+user_list = []
+if df is not None:
+    user_list = df['user'].unique().tolist()
+    if 'group_notification' in user_list:
+        user_list.remove('group_notification')
+    user_list.sort()
+    user_list.insert(0, "Overall")  # Add "Overall" to user list
+
+# Dropdown to select user for analysis
+selected_user = st.sidebar.selectbox("Show analysis with respect to", user_list)
+
+# Only run analysis if the button is clicked and a file is uploaded
+if st.sidebar.button('Show Analysis') and df is not None:
+    col1, col2, col3, col4 = st.columns(4)  
+
+    with col1:
+        col1.header("Total Messages")
+
 
 
